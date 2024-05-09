@@ -3,7 +3,7 @@ A Single Tape Turing Machine Implementation, with transition states definition p
 
 ## how to write the code
 
-'''
+```
 init : Q0
 final : Qaccept
 
@@ -15,6 +15,6 @@ del : {
 
 /* (currentState, currentSymbol , newState, r/wSymbol, Direction */
 }
-'''
+```
 
 *** Based on concepts from the Turing Machine and Recursively Enumerable Language

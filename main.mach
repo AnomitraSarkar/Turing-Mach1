@@ -1,4 +1,5 @@
-init : Q0 final : Qaccept
+init : Q0 
+final : Qaccept
 
 del : {
   (Q0,a

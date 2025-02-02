@@ -4,9 +4,6 @@ from torch import *
   
 # initializing imported module 
 
-
-
-
 class Playground(): 
     def __init__(self, winsize=(400, 500)):
         self.winsize = winsize

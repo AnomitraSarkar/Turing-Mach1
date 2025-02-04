@@ -3,7 +3,7 @@ import pygame
 from torch import *
 import csv
   
-
+# functions
 def append_file(writer):
     with open(f'{writer}', 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)

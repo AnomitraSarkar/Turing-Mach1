@@ -35,7 +35,6 @@ class Playground():
         running = True
         
         while running: 
-            # self.screen.fill((10,0,0))
             pygame.display.update()
             clock.tick(1)
             counter += 1

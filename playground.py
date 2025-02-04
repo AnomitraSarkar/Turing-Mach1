@@ -3,6 +3,11 @@ import pygame
 from torch import *
 import csv
   
+
+def append_file(writer):
+    with open(f'{writer}', 'a', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+
 # initializing imported module 
 class Playground(): 
     def __init__(self, winsize=(400, 500)):

@@ -30,8 +30,8 @@ class Playground():
             pass
         else:
             for i in range(0,len(self.geometry)):
-                print(i)
-                pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
+                print(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1])
+                # pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
         pygame.display.flip()
     
     def run(self):

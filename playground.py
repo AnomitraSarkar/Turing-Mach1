@@ -29,9 +29,9 @@ class Playground():
         if self.geometry is None:
             pass
         else:
-            for i in self.geometry:
+            for i in range(0,len(self.geometry)):
                 print(i)
-                pygame.draw.line(self.screen, i[0], i[1], i[2], 5)
+                pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
         pygame.display.flip()
     
     def run(self):
@@ -46,7 +46,7 @@ class Playground():
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
                     running = False
-            self.init_target(counter=counter)
+            self.init_target()
             self.init_machine()
             pygame.display.update()
         pygame.quit()
@@ -62,9 +62,9 @@ if __name__ == "__main__":
     env.set_target(point=(200,200))
     env.set_machine(
         [
-            ((255,0,0), (300,400), (300,300)),
-            ((255,0,0), (300,300), (300,200)),
-            ((255,0,0), (300,200), (300,100)),
+            ((255,0,0), (300,400)),
+            ((255,0,0), (300,300)),
+            ((255,0,0), (300,200)),
         ]
     )
     env.run()

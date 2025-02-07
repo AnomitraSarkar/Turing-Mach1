@@ -94,11 +94,11 @@ class Playground():
             self.screen.fill(WHITE)
             self.init_target()
             self.init_machine()
-            # append_file(
-            #     f"target-{self.target}-def-mach-config.csv",
-            #     ["X0","Y0","X1","Y1","XF","YF","Angle0", "Angle1", "TargetX", "TargetY"],
-            #     [self.geometry[0][1][0],self.geometry[0][1][1], self.geometry[1][1][0],self.geometry[1][1][1], self.geometry[2][1][0],self.geometry[2][1][1], self.angles[0], self.angles[1], self.target[0], self.target[1]]
-            #     )
+            append_file(
+                f"target-{self.target}-def-mach-config.csv",
+                ["X0","Y0","X1","Y1","XF","YF","Angle0", "Angle1", "TargetX", "TargetY"],
+                [self.geometry[0][1][0],self.geometry[0][1][1], self.geometry[1][1][0],self.geometry[1][1][1], self.geometry[2][1][0],self.geometry[2][1][1], self.angles[0], self.angles[1], self.target[0], self.target[1]]
+                )
             pygame.display.update()
         
         pygame.quit()

@@ -1,6 +1,6 @@
 import pygame 
 import csv
-from math import sin, cos, pi, sqrt, radians
+from math import sin, cos, sqrt, radians
   
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
@@ -8,9 +8,19 @@ BLUE = (0, 0, 255)
 GREEN = (0,255,0)
   
 # Functions
-def append_file(writer):
-    with open(f'{writer}', 'a', newline='') as csvfile:
+def append_file(writer, headers, data):
+    file_exists = False
+    try:
+        with open(writer, 'r') as csvfile:
+            file_exists = bool(csvfile.readline())
+    except FileNotFoundError:
+        pass
+    
+    with open(writer, 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
+        if not file_exists:
+            csv_writer.writerow(headers)
+        csv_writer.writerow(data)
         
 def distance(coord1, coord2):
     return sqrt((coord1[0] - coord2[0])**2 + (coord1[1] - coord2[1])**2)

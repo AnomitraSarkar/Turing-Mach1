@@ -1,7 +1,7 @@
 # import pygame package 
 import pygame 
 import csv
-from math import sin, cos, pi, sqrt
+from math import sin, cos, pi, sqrt, radians
   
 # functions
 def append_file(writer):
@@ -9,18 +9,18 @@ def append_file(writer):
         csv_writer = csv.writer(csvfile)
         
 def distance(coord1 , coord2):
-    return sqrt((coord1[0] - coord2[0])**2 + (coord1[0] - coord2[0])**2)
+    return sqrt((coord1[0] - coord2[0])**2 + (coord1[1] - coord2[1])**2)
     
 
 # initializing imported module 
 class Playground(): 
-    def __init__(self, winsize=(400, 500)):
+    def __init__(self, winsize=(900, 600)):
         self.winsize = winsize
         pygame.init() 
         self.screen = pygame.display.set_mode(self.winsize) 
         self.target = None
         self.geometry = None
-        self.angle = [0, 0]
+        self.angle = [0, 0, 0]
         
     def init_target(self):
         if self.target is None or self.target < (0,0) or self.target > self.winsize:
@@ -37,8 +37,9 @@ class Playground():
                 pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
             print(self.geometry)
             for i in range(len(self.geometry)-1):
-                print(self.angle[i], self.geometry[i][1], self.geometry[i+1][1])
-            
+                xnew = cos(self.angle[i])*( distance(self.geometry[i+1][1] , self.geometry[i][1])) + self.geometry[i][1][0]
+                ynew = sin(self.angle[i])*( distance(self.geometry[i+1][1] , self.geometry[i][1])) + self.geometry[i][1][1]
+                self.geometry[i+1][1][0],self.geometry[i+1][1][1]=xnew,ynew
             
         pygame.display.flip()
     
@@ -46,16 +47,23 @@ class Playground():
         clock=pygame.time.Clock()
         counter = 0
         running = True
-        FPS = 1
+        FPS = 60
         
         while running: 
-            pygame.display.update()
             clock.tick(FPS)
             counter += 1
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
                     running = False
-            self.init_target()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                self.angle[1] += 0.5
+            if keys[pygame.K_RIGHT]:
+                self.angle[1] -= 0.5
+                
+                
+                
+            self.screen.fill((0,0,0))
             self.init_machine()
             pygame.display.update()
         pygame.quit()

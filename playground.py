@@ -2,8 +2,10 @@ import pygame
 import csv
 from math import sin, cos, pi, sqrt, radians
   
-  
-
+RED = (255, 0, 0)
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+GREEN = (0,255,0)
   
 # Functions
 def append_file(writer):
@@ -27,7 +29,7 @@ class Playground():
         if self.target is None or not (0 <= self.target[0] < self.winsize[0] and 0 <= self.target[1] < self.winsize[1]):
             pass
         else:
-            pygame.draw.circle(self.screen, (255,0,0), (self.target[0], self.target[1]), 5)
+            pygame.draw.circle(self.screen, BLUE, (self.target[0], self.target[1]), 5)
             pygame.display.update()
     
     def init_machine(self):
@@ -36,6 +38,8 @@ class Playground():
         
         for i in range(len(self.geometry) - 1):
             pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
+            pygame.draw.circle(self.screen, GREEN,  self.geometry[i][1], 4)
+        pygame.draw.circle(self.screen, GREEN, self.geometry[-1][1], 5)
         
         original_lengths = [
             distance(self.geometry[i][1], self.geometry[i+1][1]) for i in range(len(self.geometry) - 1)
@@ -72,9 +76,9 @@ class Playground():
             if keys[pygame.K_DOWN]:
                 self.angles[1] -= 0.5
             
-            self.screen.fill((0, 0, 0))
-            self.init_machine()
+            self.screen.fill(WHITE)
             self.init_target()
+            self.init_machine()
             pygame.display.update()
         
         pygame.quit()
@@ -87,9 +91,9 @@ class Playground():
         
 if __name__ == "__main__":
     mach_config = [
-        [[255, 0, 0], [300, 400]],
-        [[255, 0, 0], [300, 300]],
-        [[255, 0, 0], [300, 200]],
+        [RED, [300, 400]],
+        [RED, [300, 300]],
+        [RED, [300, 200]],
     ]
     env = Playground()
     env.set_target(point=(200, 200))

@@ -1,13 +1,16 @@
 # import pygame package 
 import pygame 
 import csv
-from math import sin, cos, pi
+from math import sin, cos, pi, sqrt
   
 # functions
 def append_file(writer):
     with open(f'{writer}', 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         
+def distance(coord1 , coord2):
+    return sqrt((coord1[0] - coord2[0])**2 + (coord1[0] - coord2[0])**2)
+    
 
 # initializing imported module 
 class Playground(): 

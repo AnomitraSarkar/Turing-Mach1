@@ -1,11 +1,13 @@
 # import pygame package 
 import pygame 
 import csv
+from math import sin, cos, pi
   
 # functions
 def append_file(writer):
     with open(f'{writer}', 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
+        
 
 # initializing imported module 
 class Playground(): 
@@ -15,6 +17,7 @@ class Playground():
         self.screen = pygame.display.set_mode(self.winsize) 
         self.target = None
         self.geometry = None
+        self.angle = [0, 0]
         
     def init_target(self):
         if self.target is None or self.target < (0,0) or self.target > self.winsize:
@@ -29,25 +32,28 @@ class Playground():
         else:
             for i in range(0,len(self.geometry)-1):
                 pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
+            print(self.geometry)
+            for i in range(len(self.geometry)-1):
+                print(self.angle[i], self.geometry[i][1], self.geometry[i+1][1])
+            
+            
         pygame.display.flip()
     
     def run(self):
         clock=pygame.time.Clock()
         counter = 0
         running = True
-        FPS = 60
+        FPS = 1
         
         while running: 
             pygame.display.update()
-            clock.tick(60)
+            clock.tick(FPS)
             counter += 1
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
                     running = False
             self.init_target()
             self.init_machine()
-            for i in range(len(self.geometry)):
-                self.geometry[i][1][1] = self.geometry[i][1][1]+1
             pygame.display.update()
         pygame.quit()
         

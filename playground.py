@@ -1,6 +1,5 @@
 # import pygame package 
 import pygame 
-from torch import *
 import csv
   
 # functions
@@ -22,32 +21,33 @@ class Playground():
             pass
         else:
             pygame.draw.circle(self.screen, (255,0,0), (self.target[0], self.target[1]), 5)
-            print(self.target)
             pygame.display.update()
     
     def init_machine(self):
         if self.geometry is None:
             pass
         else:
-            for i in range(0,len(self.geometry)):
-                print(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1])
-                # pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
+            for i in range(0,len(self.geometry)-1):
+                pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
         pygame.display.flip()
     
     def run(self):
         clock=pygame.time.Clock()
         counter = 0
         running = True
+        FPS = 60
         
         while running: 
             pygame.display.update()
-            clock.tick(1)
+            clock.tick(60)
             counter += 1
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
                     running = False
             self.init_target()
             self.init_machine()
+            for i in range(len(self.geometry)):
+                self.geometry[i][1][1] = self.geometry[i][1][1]+1
             pygame.display.update()
         pygame.quit()
         
@@ -58,13 +58,15 @@ class Playground():
         self.geometry = geometry
         
 if __name__ == "__main__":
+    mach_config = [
+            [[255,0,0], [300,400]],
+            [[255,0,0], [300,300]],
+            [[255,0,0], [300,200]],
+        ]
     env = Playground()
     env.set_target(point=(200,200))
     env.set_machine(
-        [
-            ((255,0,0), (300,400)),
-            ((255,0,0), (300,300)),
-            ((255,0,0), (300,200)),
-        ]
+        mach_config
     )
     env.run()
+    

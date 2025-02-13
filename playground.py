@@ -33,6 +33,7 @@ def distance(coord1, coord2):
 # Initializing imported module 
 class Playground(): 
     def __init__(self, winsize=(900, 600)):
+        self.font = pygame.font.Font(None, 36)
         self.winsize = winsize
         pygame.init() 
         self.screen = pygame.display.set_mode(self.winsize) 
@@ -77,6 +78,8 @@ class Playground():
         while running: 
             clock.tick(FPS)
             
+            
+            
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
                     running = False
@@ -94,6 +97,11 @@ class Playground():
             self.screen.fill(WHITE)
             self.init_target()
             self.init_machine()
+            
+            text = self.font.render(f"Hello, Pygame!", True, RED)  # True = Anti-aliasing
+            text_rect = text.get_rect(center=(200, 200))  # Position at center
+            self.screen.blit(text, text_rect) 
+            
             append_file(
                 f"target-{self.target}-def-mach-config.csv",
                 ["X0","Y0","X1","Y1","XF","YF","Angle0", "Angle1", "TargetX", "TargetY"],

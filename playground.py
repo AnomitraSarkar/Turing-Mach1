@@ -46,6 +46,10 @@ class Playground():
         self.geometry = None
         self.angles = [0, 0, 0]  # Individual angles for each joint
         self.state = "Initiating Controllable"
+        self.q_table = {
+            "Loss":winsize[0]*winsize[1],
+            "Angles": self.angles
+        }
 
     def init_target(self):
         """Draw the target point."""
@@ -82,11 +86,22 @@ class Playground():
             new_y = cy + original_lengths[i] * sin(angle)
             self.geometry[i+1][1] = [new_x, new_y]
 
+    def reset_env(self,counter,mod):
+        if counter%mod==0:
+            self.angles[0] = int(random()*360)
+        if counter%mod==0:
+            self.angles[1] = int(random()*360)
+
+    def calculate_q_table(self):
+        if distance(self.geometry[-1][-1],self.target)<self.q_table["Loss"]:
+            self.q_table["Loss"] = distance(self.geometry[-1][-1],self.target)
+            self.q_table["Angles"] = self.angles
+            
     def run(self):
         """Main loop for running the simulation."""
         clock = pygame.time.Clock()
         running = True
-        FPS = 1
+        FPS = 60
         counter = 0
         
         
@@ -108,9 +123,11 @@ class Playground():
             if keys[pygame.K_DOWN]:
                 self.angles[1] -= 0.5
 
+            self.reset_env(counter,10)
             self.screen.fill(WHITE)
             self.init_target()
             self.init_machine()
+            self.calculate_q_table()
 
             # Display text
             text = self.font.render(self.state, True, RED)  
@@ -121,7 +138,9 @@ class Playground():
             text_rect = text.get_rect(center=(700, 25))  
             self.screen.blit(text, text_rect) 
 
-            
+            if counter==360:
+                print(self.q_table)
+                pygame.quit()
 
             # Append data to file
             if self.geometry and self.target:

@@ -55,7 +55,7 @@ class Playground():
         self.screen = pygame.display.set_mode(self.winsize) 
         self.target = None
         self.geometry = None
-        self.angles = [0, 0, 0]  # Individual angles for each joint
+        self.angles = [-10, -130, 0]  # Individual angles for each joint
         
         # Initialize neural network and optimizer
         self.model = AnglePredictor()
@@ -103,6 +103,7 @@ class Playground():
         self.angles[0] = predicted_values.detach().numpy()[-2]
         self.angles[1] = predicted_values.detach().numpy()[-1]
         
+        print(self.angles)
     
     def run(self):
         clock = pygame.time.Clock()
@@ -117,6 +118,17 @@ class Playground():
                     running = False
             
             self.train_model()  # Train the model to predict angles
+            
+            
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                self.angles[0] += 0.5
+            if keys[pygame.K_RIGHT]:
+                self.angles[0] -= 0.5
+            if keys[pygame.K_UP]:
+                self.angles[1] += 0.5
+            if keys[pygame.K_DOWN]:
+                self.angles[1] -= 0.5
             
             self.screen.fill(WHITE)
             self.init_target()

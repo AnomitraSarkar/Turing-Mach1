@@ -1,7 +1,9 @@
 import pygame 
 import csv
 from math import sin, cos, sqrt, radians
-  
+from random import random
+
+
 # Colors
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
@@ -84,10 +86,13 @@ class Playground():
         """Main loop for running the simulation."""
         clock = pygame.time.Clock()
         running = True
-        FPS = 60
+        FPS = 1
+        counter = 0
+        
         
         while running: 
             clock.tick(FPS)
+            counter+=1
 
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
@@ -110,6 +115,10 @@ class Playground():
             # Display text
             text = self.font.render(self.state, True, RED)  
             text_rect = text.get_rect(center=(700, 50))  
+            self.screen.blit(text, text_rect) 
+            
+            text = self.font.render(f"Iteration: {counter}", True, GREEN)  
+            text_rect = text.get_rect(center=(700, 25))  
             self.screen.blit(text, text_rect) 
 
             

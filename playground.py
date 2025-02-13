@@ -50,6 +50,7 @@ class Playground():
             "Loss":winsize[0]*winsize[1],
             "Angles": self.angles
         }
+        
 
     def init_target(self):
         """Draw the target point."""
@@ -94,25 +95,24 @@ class Playground():
 
     def calculate_q_table(self):
         if distance(self.geometry[-1][-1],self.target)<self.q_table["Loss"]:
+            self.q_table["Angles"] = self.angles[:]  # Shallow copy to prevent reference issues
+            print("Understood")
             self.q_table["Loss"] = distance(self.geometry[-1][-1],self.target)
-            self.q_table["Angles"] = self.angles
+            self.state = f"{self.q_table["Loss"]}"
             
     def run(self):
         """Main loop for running the simulation."""
         clock = pygame.time.Clock()
         running = True
-        FPS = 60
+        FPS = 120
         counter = 0
         
-        
-        while running: 
+        while running:             
             clock.tick(FPS)
             counter+=1
-
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
-                    running = False
-
+                    running = False                                     
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
                 self.angles[0] += 0.5
@@ -123,7 +123,12 @@ class Playground():
             if keys[pygame.K_DOWN]:
                 self.angles[1] -= 0.5
 
-            self.reset_env(counter,10)
+            if counter>1200:
+                self.angles = self.q_table["Angles"]
+                self.reset_env(1, 10)
+                self.state = "Final Config: " + f"{int(self.q_table["Loss"])}"
+            else:
+                self.reset_env(counter,2)
             self.screen.fill(WHITE)
             self.init_target()
             self.init_machine()
@@ -138,9 +143,9 @@ class Playground():
             text_rect = text.get_rect(center=(700, 25))  
             self.screen.blit(text, text_rect) 
 
-            if counter==360:
-                print(self.q_table)
-                pygame.quit()
+            print(self.angles, self.q_table)
+            
+                
 
             # Append data to file
             if self.geometry and self.target:
@@ -173,6 +178,6 @@ if __name__ == "__main__":
         [RED, [300, 200]],
     ]
     env = Playground()
-    env.set_target(point=(200, 200))
+    env.set_target(point=(325, 325))
     env.set_machine(mach_config)
     env.run()

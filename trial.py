@@ -1,7 +1,9 @@
 import pygame 
 import csv
 from math import sin, cos, sqrt, radians
-  
+from random import random
+
+
 # Colors
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
@@ -43,6 +45,12 @@ class Playground():
         self.target = None
         self.geometry = None
         self.angles = [0, 0, 0]  # Individual angles for each joint
+        self.state = "Initiating Controllable"
+        self.q_table = {
+            "Loss":winsize[0]*winsize[1],
+            "Angles": self.angles
+        }
+        
 
     def init_target(self):
         """Draw the target point."""
@@ -50,40 +58,70 @@ class Playground():
             pygame.draw.circle(self.screen, BLUE, (self.target[0], self.target[1]), 5)
 
     def init_machine(self):
-        """Draw the machine arm with joints."""
+        """Draw the machine arm with joints using proper forward kinematics."""
+    
         if self.geometry is None:
             return
+
+        # Ensure angles stay within bounds
+        for i in range(len(self.angles)):
+            self.angles[i] %= 360  # Keep angles within 0-360 degrees
         
+        # Set base joint (first point remains fixed)
+        base_x, base_y = self.geometry[0][1]
+
+        # Reset first joint position
+        self.geometry[0][1] = [base_x, base_y]
+
+        cumulative_angle = 0  # This keeps track of the sum of angles
+        for i in range(len(self.geometry) - 1):
+            cumulative_angle += self.angles[i]  # Add the angle of the current joint
+            
+            angle_rad = radians(cumulative_angle)  # Convert to radians
+            
+            # Get length of current segment
+            length = distance(self.geometry[i][1], self.geometry[i + 1][1])
+            
+            # Calculate new position of next joint
+            new_x = self.geometry[i][1][0] + length * cos(angle_rad)
+            new_y = self.geometry[i][1][1] + length * sin(angle_rad)
+            
+            self.geometry[i + 1][1] = [new_x, new_y]
+
+        # Draw lines and joints
         for i in range(len(self.geometry) - 1):
             pygame.draw.line(self.screen, self.geometry[i][0], self.geometry[i][1], self.geometry[i+1][1], 5)
             pygame.draw.circle(self.screen, GREEN, self.geometry[i][1], 4)
+        
         pygame.draw.circle(self.screen, GREEN, self.geometry[-1][1], 5)
 
-        # Update the joint positions
-        original_lengths = [
-            distance(self.geometry[i][1], self.geometry[i+1][1]) for i in range(len(self.geometry) - 1)
-        ]
-        
-        for i in range(len(self.geometry) - 1):
-            cx, cy = self.geometry[i][1]
-            angle = radians(self.angles[i])
-            new_x = cx + original_lengths[i] * cos(angle)
-            new_y = cy + original_lengths[i] * sin(angle)
-            self.geometry[i+1][1] = [new_x, new_y]
 
+    def reset_env(self,counter,mod):
+        if counter%mod==0:
+            self.angles[0] = int(random()*360)
+        if counter%mod==0:
+            self.angles[1] = int(random()*360)
+
+    def calculate_q_table(self):
+        if distance(self.geometry[-1][-1],self.target)<self.q_table["Loss"]:
+            self.q_table["Loss"] = distance(self.geometry[-1][-1],self.target)
+            self.q_table["Angles"] = self.angles
+            print("updated")
+            self.state = f"{self.q_table["Loss"]}"
+            
     def run(self):
         """Main loop for running the simulation."""
         clock = pygame.time.Clock()
         running = True
-        FPS = 60
+        FPS = 120
+        counter = 0
         
-        while running: 
+        while running:             
             clock.tick(FPS)
-
+            counter+=1
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
-                    running = False
-
+                    running = False                                     
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
                 self.angles[0] += 0.5
@@ -94,14 +132,29 @@ class Playground():
             if keys[pygame.K_DOWN]:
                 self.angles[1] -= 0.5
 
+            if counter>1200:
+                self.angles = self.q_table["Angles"]
+                self.reset_env(1, 10)
+                self.state = "Final Config: " + f"{int(self.q_table["Loss"])}"
+            else:
+                self.reset_env(counter,10)
             self.screen.fill(WHITE)
             self.init_target()
             self.init_machine()
+            self.calculate_q_table()
 
             # Display text
-            text = self.font.render("Hello, Pygame!", True, RED)  
-            text_rect = text.get_rect(center=(200, 50))  
+            text = self.font.render(self.state, True, RED)  
+            text_rect = text.get_rect(center=(700, 50))  
             self.screen.blit(text, text_rect) 
+            
+            text = self.font.render(f"Iteration: {counter}", True, GREEN)  
+            text_rect = text.get_rect(center=(700, 25))  
+            self.screen.blit(text, text_rect) 
+
+            print(self.angles, self.q_table)
+            
+                
 
             # Append data to file
             if self.geometry and self.target:
@@ -134,6 +187,6 @@ if __name__ == "__main__":
         [RED, [300, 200]],
     ]
     env = Playground()
-    env.set_target(point=(200, 200))
+    env.set_target(point=(225, 225))
     env.set_machine(mach_config)
     env.run()

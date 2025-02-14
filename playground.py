@@ -10,6 +10,16 @@ WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
+
+class Perceptron:
+    def __init__(self, neurons_count):
+        self.neurons = neurons_count
+        self.weights = [random() for i in self.neurons]
+        
+
+
+
+
 # Function to append to CSV
 def append_file(writer, headers, data):
     file_exists = False
@@ -51,6 +61,7 @@ class Playground():
             "Angles": self.angles
         }
         self.acceptance_limit = 10
+        self.gradients = []
         
 
     def init_target(self):
@@ -93,11 +104,15 @@ class Playground():
             self.angles[0] = int(random()*360)
         if counter%mod==0:
             self.angles[1] = int(random()*360)
+        for i in self.gradients:
+            pygame.draw.circle(self.screen, GREEN, i, 5)
+            pygame.display.flip()
 
     def calculate_q_table(self):
         if distance(self.geometry[-1][-1],self.target)<self.q_table["Loss"]:
             self.q_table["Angles"] = self.angles[:]  # Shallow copy to prevent reference issues
             print("Understood")
+            self.gradients.append(self.geometry[-1][-1])
             self.q_table["Loss"] = distance(self.geometry[-1][-1],self.target)
             self.state = f"{self.q_table["Loss"]}"
             

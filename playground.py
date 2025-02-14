@@ -10,7 +10,7 @@ WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-
+# trying to implement deep q learning
 class Perceptron:
     def __init__(self, neurons_count):
         self.neurons = neurons_count

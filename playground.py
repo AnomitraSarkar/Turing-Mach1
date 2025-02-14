@@ -50,6 +50,7 @@ class Playground():
             "Loss":winsize[0]*winsize[1],
             "Angles": self.angles
         }
+        self.acceptance_limit = 10
         
 
     def init_target(self):
@@ -123,7 +124,7 @@ class Playground():
             if keys[pygame.K_DOWN]:
                 self.angles[1] -= 0.5
 
-            if counter>1200:
+            if self.acceptance_limit>=self.q_table["Loss"]:
                 self.angles = self.q_table["Angles"]
                 self.reset_env(1, 10)
                 self.state = "Final Config: " + f"{int(self.q_table["Loss"])}"

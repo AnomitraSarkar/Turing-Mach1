@@ -6,6 +6,7 @@ from random import random
 
 # Colors
 RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -54,7 +55,7 @@ class Playground():
         pygame.display.set_caption("Machine Target Simulation")
         self.target = None
         self.geometry = None
-        self.angles = [0, 0, 0]  # Individual angles for each joint
+        self.angles = [0, 0, 0, 0]  # Individual angles for each joint
         self.state = "Initiating Controllable"
         self.q_table = {
             "Loss":winsize[0]*winsize[1],
@@ -101,11 +102,10 @@ class Playground():
 
     def reset_env(self,counter,mod):
         if counter%mod==0:
-            self.angles[0] = int(random()*360)
-        if counter%mod==0:
-            self.angles[1] = int(random()*360)
+            for i in range(len(self.angles)-1):
+                self.angles[i] = int(random()*360)
         for i in self.gradients:
-            pygame.draw.circle(self.screen, GREEN, i, 5)
+            pygame.draw.circle(self.screen, YELLOW, i, 5)
             pygame.display.flip()
 
     def calculate_q_table(self):
@@ -192,6 +192,7 @@ if __name__ == "__main__":
         [RED, [300, 400]],
         [RED, [300, 300]],
         [RED, [300, 200]],
+        [RED, [300, 100]],
     ]
     env = Playground()
     env.set_target(point=(325, 325))

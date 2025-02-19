@@ -18,9 +18,6 @@ class Perceptron:
         self.weights = [random() for i in self.neurons]
         
 
-
-
-
 # Function to append to CSV
 def append_file(writer, headers, data):
     file_exists = False

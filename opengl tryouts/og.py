@@ -5,7 +5,7 @@ import numpy as np
 import glm  # pip install PyGLM
 import math
 
-# Vertex shader source code (shared by plane and square)
+# Vertex shader source code (shared by plane and cube)
 vertex_shader_source = """
 #version 330 core
 layout (location = 0) in vec3 aPos;
@@ -21,7 +21,7 @@ void main()
 }
 """
 
-# Fragment shader source code (shared by plane and square)
+# Fragment shader source code (shared by plane and cube)
 fragment_shader_source = """
 #version 330 core
 out vec4 FragColor;
@@ -33,7 +33,7 @@ void main()
 }
 """
 
-# Plane vertices and indices (a large quad)
+# Plane vertices and indices (a large quad on the XZ plane)
 plane_vertices = np.array([
     # positions           # texture coords
     -10.0, 0.0, -10.0,    0.0, 0.0,
@@ -47,19 +47,57 @@ plane_indices = np.array([
     2, 3, 0
 ], dtype=np.uint32)
 
-# Square vertices and indices (a 1x1 quad)
-square_vertices = np.array([
-    # positions           # texture coords
-    -0.5, 0.0, -0.5,      0.0, 0.0,
-     0.5, 0.0, -0.5,      1.0, 0.0,
-     0.5, 0.0,  0.5,      1.0, 1.0,
-    -0.5, 0.0,  0.5,      0.0, 1.0,
-], dtype=np.float32)
+# Cube vertex data (36 vertices, with position and texture coords)
+# This cube is centered at the origin with side length 1.
+cube_vertices = np.array([
+    # Back face
+    -0.5, -0.5, -0.5,   0.0, 0.0,
+     0.5,  0.5, -0.5,   1.0, 1.0,
+     0.5, -0.5, -0.5,   1.0, 0.0,
+     0.5,  0.5, -0.5,   1.0, 1.0,
+    -0.5, -0.5, -0.5,   0.0, 0.0,
+    -0.5,  0.5, -0.5,   0.0, 1.0,
 
-square_indices = np.array([
-    0, 1, 2,
-    2, 3, 0
-], dtype=np.uint32)
+    # Front face
+    -0.5, -0.5,  0.5,   0.0, 0.0,
+     0.5, -0.5,  0.5,   1.0, 0.0,
+     0.5,  0.5,  0.5,   1.0, 1.0,
+     0.5,  0.5,  0.5,   1.0, 1.0,
+    -0.5,  0.5,  0.5,   0.0, 1.0,
+    -0.5, -0.5,  0.5,   0.0, 0.0,
+
+    # Left face
+    -0.5,  0.5,  0.5,   1.0, 0.0,
+    -0.5,  0.5, -0.5,   1.0, 1.0,
+    -0.5, -0.5, -0.5,   0.0, 1.0,
+    -0.5, -0.5, -0.5,   0.0, 1.0,
+    -0.5, -0.5,  0.5,   0.0, 0.0,
+    -0.5,  0.5,  0.5,   1.0, 0.0,
+
+    # Right face
+     0.5,  0.5,  0.5,   1.0, 0.0,
+     0.5, -0.5, -0.5,   0.0, 1.0,
+     0.5,  0.5, -0.5,   1.0, 1.0,
+     0.5, -0.5, -0.5,   0.0, 1.0,
+     0.5,  0.5,  0.5,   1.0, 0.0,
+     0.5, -0.5,  0.5,   0.0, 0.0,
+
+    # Bottom face
+    -0.5, -0.5, -0.5,   0.0, 1.0,
+     0.5, -0.5, -0.5,   1.0, 1.0,
+     0.5, -0.5,  0.5,   1.0, 0.0,
+     0.5, -0.5,  0.5,   1.0, 0.0,
+    -0.5, -0.5,  0.5,   0.0, 0.0,
+    -0.5, -0.5, -0.5,   0.0, 1.0,
+
+    # Top face
+    -0.5,  0.5, -0.5,   0.0, 1.0,
+     0.5,  0.5,  0.5,   1.0, 0.0,
+     0.5,  0.5, -0.5,   1.0, 1.0,
+     0.5,  0.5,  0.5,   1.0, 0.0,
+    -0.5,  0.5, -0.5,   0.0, 1.0,
+    -0.5,  0.5,  0.5,   0.0, 0.0,
+], dtype=np.float32)
 
 def framebuffer_size_callback(window, width, height):
     glViewport(0, 0, width, height)
@@ -87,8 +125,8 @@ def process_input(window):
     if glfw.get_key(window, glfw.KEY_ESCAPE) == glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
-def init_object(vertices, indices):
-    """Initialize buffers for an object (VAO, VBO, EBO) and return VAO and index count."""
+def init_indexed_object(vertices, indices):
+    """Initialize buffers for an indexed object (VAO, VBO, EBO) and return VAO and index count."""
     VAO = glGenVertexArrays(1)
     VBO = glGenBuffers(1)
     EBO = glGenBuffers(1)
@@ -112,6 +150,24 @@ def init_object(vertices, indices):
     glBindVertexArray(0)
     return VAO, len(indices)
 
+def init_object_array(vertices):
+    """Initialize buffers for a non-indexed object using glDrawArrays, and return VAO and vertex count."""
+    VAO = glGenVertexArrays(1)
+    VBO = glGenBuffers(1)
+    
+    glBindVertexArray(VAO)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO)
+    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+    
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * vertices.itemsize, ctypes.c_void_p(0))
+    glEnableVertexAttribArray(0)
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * vertices.itemsize, ctypes.c_void_p(3 * vertices.itemsize))
+    glEnableVertexAttribArray(1)
+    
+    glBindVertexArray(0)
+    vertex_count = int(len(vertices) / 5)
+    return VAO, vertex_count
+
 def main():
     global camera_angle, vertical_angle
 
@@ -119,7 +175,7 @@ def main():
     if not glfw.init():
         return
 
-    window = glfw.create_window(800, 600, "OpenGL Plane with Square", None, None)
+    window = glfw.create_window(800, 600, "OpenGL Plane with Cube", None, None)
     if not window:
         glfw.terminate()
         return
@@ -132,9 +188,10 @@ def main():
     fragment_shader = OpenGL.GL.shaders.compileShader(fragment_shader_source, GL_FRAGMENT_SHADER)
     shader_program = OpenGL.GL.shaders.compileProgram(vertex_shader, fragment_shader)
 
-    # Initialize objects: plane and square
-    plane_VAO, plane_index_count = init_object(plane_vertices, plane_indices)
-    square_VAO, square_index_count = init_object(square_vertices, square_indices)
+    # Initialize plane using indexed drawing
+    plane_VAO, plane_index_count = init_indexed_object(plane_vertices, plane_indices)
+    # Initialize cube using array drawing (non-indexed)
+    cube_VAO, cube_vertex_count = init_object_array(cube_vertices)
 
     glEnable(GL_DEPTH_TEST)
 
@@ -159,40 +216,40 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glUseProgram(shader_program)
         
-        # Set the projection and view matrices (shared by both objects)
+        # Set the shared projection and view matrices
         proj_loc = glGetUniformLocation(shader_program, "projection")
         view_loc = glGetUniformLocation(shader_program, "view")
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm.value_ptr(projection))
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm.value_ptr(view))
         
-        # Render the plane
-        # For the plane, use an identity model matrix
-        model = glm.mat4(1.0)
         model_loc = glGetUniformLocation(shader_program, "model")
-        glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm.value_ptr(model))
         color_loc = glGetUniformLocation(shader_program, "color")
-        # Set plane color (green)
+        
+        # Render the plane with an identity model matrix (green)
+        model = glm.mat4(1.0)
+        glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm.value_ptr(model))
         glUniform4f(color_loc, 0.3, 0.7, 0.3, 1.0)
         glBindVertexArray(plane_VAO)
         glDrawElements(GL_TRIANGLES, plane_index_count, GL_UNSIGNED_INT, None)
         glBindVertexArray(0)
         
-        # Render the square on top of the plane
-        # Create a model matrix to position the square. Here we translate it slightly above the plane.
-        model = glm.translate(glm.mat4(1.0), glm.vec3(0.0, 0.01, 0.0))
+        # Render the cube on top of the plane.
+        # Translate the cube upward so its bottom is at y = 0.
+        # Since the cube is centered at origin with side length 1, translating by 0.5 in Y positions it on the plane.
+        model = glm.translate(glm.mat4(1.0), glm.vec3(0.0, 0.5, 0.0))
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm.value_ptr(model))
-        # Set square color (blue, for example)
+        # Set cube color (e.g., blue)
         glUniform4f(color_loc, 0.0, 0.0, 1.0, 1.0)
-        glBindVertexArray(square_VAO)
-        glDrawElements(GL_TRIANGLES, square_index_count, GL_UNSIGNED_INT, None)
+        glBindVertexArray(cube_VAO)
+        glDrawArrays(GL_TRIANGLES, 0, cube_vertex_count)
         glBindVertexArray(0)
         
         glfw.swap_buffers(window)
         glfw.poll_events()
 
-    # Cleanup
+    # Cleanup: Deleting VAOs (and associated buffers will be cleaned up by context deletion)
     glDeleteVertexArrays(1, [plane_VAO])
-    glDeleteVertexArrays(1, [square_VAO])
+    glDeleteVertexArrays(1, [cube_VAO])
     glfw.terminate()
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
 start : Q0 
-final : Qaccept
 
 del : {
   (Q0,a
@@ -8,3 +7,4 @@ del : {
   Qaccept,a,<)
 }
 
+final : Qaccept

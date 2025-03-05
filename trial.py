@@ -53,12 +53,10 @@ class Playground():
         
 
     def init_target(self):
-        """Draw the target point."""
         if self.target is not None and (0 <= self.target[0] < self.winsize[0]) and (0 <= self.target[1] < self.winsize[1]):
             pygame.draw.circle(self.screen, BLUE, (self.target[0], self.target[1]), 5)
 
     def init_machine(self):
-        """Draw the machine arm with joints using proper forward kinematics."""
     
         if self.geometry is None:
             return
@@ -110,7 +108,6 @@ class Playground():
             self.state = f"{self.q_table["Loss"]}"
             
     def run(self):
-        """Main loop for running the simulation."""
         clock = pygame.time.Clock()
         running = True
         FPS = 120
@@ -172,11 +169,9 @@ class Playground():
         pygame.quit()
     
     def set_target(self, point):
-        """Set the target coordinates."""
         self.target = point
 
     def set_machine(self, geometry):
-        """Set the machine's joint positions."""
         self.geometry = geometry
 
 

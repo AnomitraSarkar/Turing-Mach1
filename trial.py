@@ -179,14 +179,9 @@ class Playground():
         """Set the machine's joint positions."""
         self.geometry = geometry
 
+
+
+
 # Run the simulation
 if __name__ == "__main__":
-    mach_config = [
-        [RED, [300, 400]],
-        [RED, [300, 300]],
-        [RED, [300, 200]],
-    ]
-    env = Playground()
-    env.set_target(point=(225, 225))
-    env.set_machine(mach_config)
-    env.run()
+    

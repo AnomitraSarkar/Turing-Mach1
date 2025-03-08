@@ -5,5 +5,8 @@ void setup(){
   }
   
 void loop(){
+  if(Serial.isAvailable()){
+    Serial.println("Serial ");
+  }
     Serial.println("hello");
 }

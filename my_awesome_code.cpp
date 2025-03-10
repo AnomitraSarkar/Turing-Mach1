@@ -1,5 +1,7 @@
 #include <iostream>
 
+using namespace std;
+
 // Custom Pseudo-Random Number Generator using Linear Congruential Generator (LCG)
 class MyPRNG {
 private:

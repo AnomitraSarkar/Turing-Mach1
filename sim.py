@@ -3,7 +3,7 @@ from playground import Playground
 mach_config = [
     [[255, 0, 0], [300, 400]],
     [[255, 0, 0], [300, 300]],
-    [[255, 0, 0], [300, 200]],
+    [[255, 0, 0], [300, 200]],upda
 ]
 env = Playground()
 env.set_target(point=(200, 200))

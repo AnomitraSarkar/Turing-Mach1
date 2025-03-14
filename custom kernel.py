@@ -13,7 +13,7 @@ image = cv2.imread('image.png', cv2.IMREAD_GRAYSCALE)
 gaussian_filter =  np.array([
     [-1, -1, -1,-1,-1],
     [-1, 2, 2,2,-1],
-    [-1, 2, 10,2,-1],
+    [-1, 2, 0,2,-1],
     [-1, 2, 2,2,-1],
     [-1, -1, -1,-1,-1],
                              

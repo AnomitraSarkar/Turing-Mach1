@@ -10,9 +10,15 @@ def apply_filter(image, kernel):
 image = cv2.imread('image.png', cv2.IMREAD_GRAYSCALE)
 
 # Define custom filters (kernels)
-gaussian_filter = (1/16) * np.array([[1, 2, 1],
-                                     [2, 4, 2],
-                                     [1, 2, 1]])
+gaussian_filter =  np.array([
+    [-1, -1, -1,-1,-1],
+    [-1, 2, 2,2,-1],
+    [-1, 2, 10,2,-1],
+    [-1, 2, 2,2,-1],
+    [-1, -1, -1,-1,-1],
+                             
+                             
+                             ])
 
 laplacian_filter = np.array([[ 0,  1,  0],
                               [ 1, -4,  1],

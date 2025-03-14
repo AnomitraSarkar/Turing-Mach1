@@ -31,13 +31,13 @@ axes[0].imshow(image, cmap='gray')
 axes[0].set_title("Original Image")
 
 axes[1].imshow(filtered_gaussian, cmap='gray')
-axes[1].set_title("Gaussian Filter")
+axes[1].set_title("Custom Filter")
 
 axes[2].imshow(filtered_laplacian, cmap='gray')
-axes[2].set_title("Laplacian Filter")
+# axes[2].set_title("Laplacian Filter")
 
-axes[3].imshow(filtered_box, cmap='gray')
-axes[3].set_title("Box Filter")
+# axes[3].imshow(filtered_box, cmap='gray')
+# axes[3].set_title("Box Filter")
 
 for ax in axes:
     ax.axis("off")

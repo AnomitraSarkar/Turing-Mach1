@@ -7,7 +7,7 @@ def apply_filter(image, kernel):
     return cv2.filter2D(image, -1, kernel)
 
 # Load the image in grayscale
-image = cv2.imread('image.jpg', cv2.IMREAD_GRAYSCALE)
+image = cv2.imread('image.png', cv2.IMREAD_GRAYSCALE)
 
 # Define custom filters (kernels)
 gaussian_filter = (1/16) * np.array([[1, 2, 1],

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 # Grid size
-size = 120  # 100x100 grid
+size = 100  # 100x100 grid
 c = 3.0  # Wave speed
 dt = 0.1  # Time step
 dx = 1.0  # Grid spacing

@@ -9,10 +9,11 @@ H0 = 70  # Hubble constant in km/s/Mpc
 c = 3e5  # Speed of light in km/s
 Omega_m = 0.3  # Matter density parameter
 Omega_L = 0.7  # Dark energy density parameter
+Omega_k = 1.0 - Omega_m - Omega_L  # Curvature density parameter
 
 # Function for E(z) in ΛCDM model
 def E(z):
-    return np.sqrt(Omega_m * (1 + z)**3 + Omega_L)
+    return np.sqrt(Omega_m * (1 + z)**3 + Omega_k * (1 + z)**2 + Omega_L)
 
 # Proper luminosity distance in ΛCDM model
 def luminosity_distance_lcdm(z):
@@ -25,7 +26,7 @@ def luminosity_distance_drag(z, alpha):
     return (c / H0) * (1 + z) * np.exp(-alpha * np.log(1 + z))
 
 # Load latest Pantheon+ Supernova Data from File
-file_path = "/mnt/data/lcparam_full_long.txt"
+file_path = "lcparam_full_long.txt"
 df = pd.read_csv(file_path, delim_whitespace=True, comment='#')
 
 # Ensure correct column names and check dataset structure
